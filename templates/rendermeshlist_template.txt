@@ -1,0 +1,16 @@
+            {
+                _class = "RenderMeshList"
+                children = 
+                [
+                    {
+                        _class = "RenderMeshFile"
+                        filename = {REPLACE_TO_ADD_DMXFBX}
+                        import_scale = {REPLACE_TO_ADD_SCALE}
+                        import_filter = 
+                        {
+                            exclude_by_default = false
+                            exception_list = [  ]
+                        }
+                    }
+                ]
+            }
