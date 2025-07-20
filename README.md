@@ -1,2 +1,4 @@
 # Muppet
-A tool that performs operations on VMDLs and VMATs for the Source 2 Engine.
+Model Unit for Pipeline Preparation and Export Tasks
+
+for Half-life Alyx
