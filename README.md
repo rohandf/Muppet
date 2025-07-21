@@ -1,4 +1,4 @@
 # Muppet
-## Model Utility for Pipeline Preparation and Export Tasks
+## Model Utility for Parsing and Processing Engine-ready Targets
 # Supported Games
 * Half-Life Alyx
