@@ -2,8 +2,7 @@
 Instace Control Module
 
 This module:
-    this module is used to handle every instance the user boots
-    like setting vars. 
+    this module is used to handle every instance the user makes.
 
 -DOURAN
 '''
