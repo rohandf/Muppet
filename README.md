@@ -1,4 +1,4 @@
 # Muppet
-Model Unit for Pipeline Preparation and Export Tasks
-
-for Half-life Alyx
+## Model Utility for Pipeline Preparation and Export Tasks
+# Supported Games
+* Half-Life Alyx
