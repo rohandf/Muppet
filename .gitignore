@@ -1,0 +1,9 @@
+*.pyc
+dmx_data/Slayer_Cape.txt
+dmx_data/Slayer_Cape_proxy.txt
+dmx_data/Slayer_Helmet.txt
+dmx_data/Slayer_Helmet_spec.txt
+dmx_data/Slayer_Lowerbody.txt
+dmx_data/Slayer_Lowerbody_spec.txt
+dmx_data/Slayer_UpperBody.txt
+dmx_data/Slayer_UpperBody_spec.txt
