@@ -37,11 +37,11 @@ def grab_mgl():
 # Material Group List Remap
 def grab_mglr(material_from, material_to):
     with open(
-        os.path.join(os.path.dirname(__file__), MGL_TMP), 'r'
+        os.path.join(os.path.dirname(__file__), MGLR_TMP), 'r'
         ) as f_mgl:
         text = f_mgl.read()
-        text.replace("{REPLACE_TO_ADD_DEFAULT}", material_from)
-        text.replace("{REPLACE_TO_ADD_VMAT}", material_to)
+        text = text.replace("{REPLACE_TO_ADD_DEFAULT}", material_from)
+        text = text.replace("{REPLACE_TO_ADD_VMAT}", material_to)
         return text
 
 # Render Mesh List
@@ -50,6 +50,6 @@ def grab_rml(filename, scale):
         os.path.join(os.path.dirname(__file__), RML_TMP), 'r'
         ) as f_rml:
         text = f_rml.read()
-        text.replace("{REPLACE_TO_ADD_DMXFBX}", filename)
-        text.replace("{REPLACE_TO_ADD_SCALE}", str(scale))
-        return text
+        text = text.replace("{REPLACE_TO_ADD_DMXFBX}", filename)
+        text = text.replace("{REPLACE_TO_ADD_SCALE}", str(scale))
+        return(text)
