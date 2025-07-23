@@ -40,31 +40,16 @@ def verify_files(input):
 
 # DOES NOT WALK INTO DIRECTORIES IN A LOOP
 def find_files(input, ends_with=None, verify=False):
-    matches = []
     seen = set()
-    ends_with = [ext.lower() for ext in ends_with]
+    ends_with = [ext.lower() for ext in (ends_with or [])]
 
-    # Use os.listdir instead of os.walk to avoid recursion
-    for file in os.listdir(input):
-        full_path = os.path.join(input, file)
-        if not os.path.isfile(full_path):
-            continue  # Skip if not a file
-
-        file_lower = file.lower()
-        if not ends_with or any(file_lower.endswith(ext) for ext in ends_with):
-            norm_path = os.path.normpath(full_path).lower()
-
-            if norm_path in seen:
-                continue  # Skip duplicates
-            seen.add(norm_path)
-
-            if verify:
-                if verify_files(full_path):
-                    matches.append(full_path)
-            else:
-                matches.append(full_path)
-
-    return matches
+    return [
+        f for f in (os.path.join(input, name) for name in os.listdir(input))
+        if os.path.isfile(f)
+        and (not ends_with or any(f.lower().endswith(ext) for ext in ends_with))
+        and not (os.path.normpath(f).lower() in seen or seen.add(os.path.normpath(f).lower()))
+        and (not verify or verify_files(f))
+    ]
 
 # strips file paths to filenames and adds them to a list 
 def strip_to_filenames(paths, rm_ext=False):

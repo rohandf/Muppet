@@ -50,6 +50,6 @@ def grab_rml(filename, scale):
         os.path.join(os.path.dirname(__file__), RML_TMP), 'r'
         ) as f_rml:
         text = f_rml.read()
-        text.replace("{REPLACE_TO_ADD_DMXFBX}", filename)
-        text.replace("{REPLACE_TO_ADD_SCALE}", float(scale))
-        return text
+        text = text.replace("{REPLACE_TO_ADD_DMXFBX}", filename)
+        text = text.replace("{REPLACE_TO_ADD_SCALE}", str(scale))
+        return(text)
