@@ -44,7 +44,7 @@ def get_mats_from_dir(mesh_dir: str, vmat_dir: list) -> str:
     mesh_dir = single model. \n
     vmat_dir = list of vmats.
     '''
-    t_mats = shared_formats.find_files(vmat_dir, [".vmat"])
+    t_mats = vmat_dir
     f_mats = []
     if mesh_dir.endswith(".dmx"):
         f_mats = shared_formats.extract_dmx_materials(mesh_dir)
