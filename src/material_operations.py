@@ -11,7 +11,7 @@ from rapidfuzz import process, fuzz
 
 
 # accepts dictionary of from-to materials
-def add_mats(mat_dict) -> str:
+def add_mats(mat_dict: dict) -> str:
     remaps = ""
     for from_mat, to_mat in mat_dict.items():
         tmp_remap = tg.grab_mglr(from_mat, to_mat)
@@ -34,7 +34,7 @@ def make_remap_dict(f_mats,t_mats) -> dict:
             mat_dict[f_mat] = result[0]
             print(result[1])
         else: # if no valid matches:
-            pass # do nothing
+            print("no valid match found for "+f_mat)
     return(add_mats(mat_dict))
 
 
