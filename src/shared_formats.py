@@ -173,13 +173,15 @@ dmx_material_pattern = r'"material"\s+"DmeMaterial"\s*\{[^}]*?"name"\s+"string"\
 def extract_dmx_materials(input):
     with open(input, "r", encoding="utf-8", errors="ignore") as dmx:
         matches = re.findall(dmx_material_pattern, dmx.read())
-        return matches if matches else False
+        #return matches if matches else False
+        return matches if matches else []
 
 dmx_bones_pattern = r'"DmeTransform"\s*\{[^}]*?"name"\s+"string"\s+"([^"]+)"'
 def extract_dmx_bones(input):
     with open(input, "r", encoding="utf-8", errors="ignore") as dmx:
         bones = re.findall(dmx_bones_pattern, dmx.read())
-        return bones if bones else False
+        #return bones if bones else False
+        return bones if bones else []
 
 #adds in a list
 def extract_fbx_materials(input):

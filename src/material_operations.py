@@ -8,6 +8,7 @@ to be later grabbed into the function that constructs the final vmdl.
 import template_grabber as tg
 import shared_formats
 from rapidfuzz import process, fuzz
+import shared_formats
 
 
 # accepts dictionary of from-to materials
@@ -27,9 +28,10 @@ def make_mat_class(remaps) -> str:
 #constructs dictionary to create remaps from from-to pairs
 def make_remap_dict(f_mats,t_mats) -> dict:
     mat_dict = {} #dict of material from-to pairs
+    print(t_mats)
     for f_mat in f_mats:
         #use process.extractone with fuzz.ratio, compare matname to looped-over all vmats (t_mats, target vmats)
-        result = process.extractOne(f_mat, t_mats, scorer=fuzz.ratio, score_cutoff=60)
+        result = process.extractOne(f_mat, t_mats, scorer=fuzz.ratio)
         if result != None:
             mat_dict[f_mat] = result[0]
             print(result[1])
@@ -46,9 +48,18 @@ def get_mats_from_dir(mesh_dir: str, vmat_dir: list) -> str:
     '''
     t_mats = vmat_dir
     f_mats = []
-    if mesh_dir.endswith(".dmx"):
+    if format_check(mesh_dir) == "dmx":
         f_mats = shared_formats.extract_dmx_materials(mesh_dir)
-    if mesh_dir.endswith(".fbx"):
+    if format_check(mesh_dir) == "fbx":
         f_mats = shared_formats.extract_fbx_materials(mesh_dir)
     #return the MaterialGroupList.
     return(make_remap_dict(f_mats,t_mats))
+
+# simply checks the header and returns "fbx" or "dmx"
+def format_check(data):
+    #check if dmx:
+    with open(data) as fl:
+        if "dmx" in fl.readline():
+            return "dmx"
+        elif "fbx" in fl.readline():
+            return "fbx"

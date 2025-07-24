@@ -1,27 +1,18 @@
 import material_operations
+import os
 import shared_formats
-from rapidfuzz import process, fuzz
-import pprint
 
+mesh_dir = "D:/VSC projects/PRS2Tool/test/doom_dark_ages/characters/heros/slayer/Source/Slayer_UpperBody.txt"
+vmat_dir = "D:/VSC projects/PRS2Tool/test/doom_dark_ages/characters/heros/slayer/Materials/Textures"
+vmat_list = []
 
-test_dir = r"D:\VSC projects\PRS2Tool\test"
-files = shared_formats.find_files(test_dir, [".dmx",".fbx"], verify=True)
+vmat_dir = os.listdir(vmat_dir)
+for vmat in vmat_dir:
+    if vmat.endswith(".vmat"):
+        vmat_list.append(vmat)
 
-def make_remap_dict():
-    for file in files:
-        materials = shared_formats.extract_fbx_materials(file)
-        mat_dict = {} #dict of material from-to pairs
-        for material in materials:
-            choices = ["pants_mat.vmat", "Pnats_Mat.vmat", "Pants_Mat.vmat", "Props_mat.vmat"]
-            #use process.extractone with fuzz.ratio, compare matname to looped-over all vmats
-            result = process.extractOne(material, choices, scorer=fuzz.ratio, score_cutoff=60)
-            # if no valid matches
-            if result != None:
-                mat_dict[material] = result[0]
-                print(result[1])
-            else:
-                pass
-                #mat_dict[material] = material+".vmat"
+#print(vmat_list)
 
-        return mat_dict
-    
+print(material_operations.get_mats_from_dir(mesh_dir, vmat_list))
+
+#print(shared_formats.extract_dmx_materials(mesh_dir))
