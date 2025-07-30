@@ -1,66 +1,150 @@
-from instance_control import Config, handle_set_command
+"""
+This file is responsible for the UI and functioning of MUPPET.
+To start the program, call main_menu().
+
+-RF
+"""
+
+import questionary
+import configparser
 import os
-import re
 
+# questionary print styles
+MUPPET_COLOR = "fg:lime"
+MUPPET_ERROR = "fg:red"
+MUPPET_CAUTION = "fg:black bg:orange"
+MUPPET_INFO = "fg:blue italic"
 
+USER_CONFIG_PATH = "user_config.ini"
 
-# this is used to verify if the mod directory is valid. we dont want to ever be writing in diff directories
-verify_mod = r"half-life alyx\\content\\hlvr_addons"
+def main_menu():
+    questionary.print("\t- Main Menu -", style=MUPPET_COLOR)
+    mm_option = questionary.select(
+        "What do you want to do?",
+        choices=[
+            "MUPPET Setup",
+            "Batch VMDL Maker",
+            "Close MUPPET."
+        ]
+    ).ask()
 
-while True:
-    userinput_contentpath = input("Enter Your Directory: ").strip()
-    #userinput_contentpath = r"D:\SteamLibrary\steamapps\common\Half-Life Alyx\content\hlvr_addons\gaming\models\ghostrunner_2\ghostrunner"
+    match mm_option:
+        case "MUPPET Setup":
+            menu_setup()
+        case "Batch VMDL Maker":
+            questionary.print("This has not been implemented yet.", style=MUPPET_CAUTION)
+        case "Close MUPPET.":
+            questionary.print("\tBye!", style=MUPPET_COLOR)
+            return() # ends program
 
-    if os.path.exists(userinput_contentpath) and re.search(verify_mod, userinput_contentpath, re.IGNORECASE):
-        break
+# settings menu
+def menu_setup():
+    questionary.print("\t- Settings -", style=MUPPET_COLOR)
+    setup_option = questionary.select(
+        ">",
+        choices = [
+            "Set dmxconvert.exe location",
+            "Set resourcecompiler.exe location",
+            "Back to Main Menu",
+        ]
+    ).ask()
 
+    match setup_option:
+        case "Set dmxconvert.exe location":
+            config_dmxconvert_location()
+        case "Set resourcecompiler.exe location":
+            config_compiler_location()
+        case "Back to Main Menu":
+            main_menu()
+
+# requests the location to dmxconvert.exe
+def config_dmxconvert_location():
+    questionary.print("dmxconvert.exe is found in this folder:\nsteamapps/common/Half-Life Alyx/game/bin/win64/dmxconvert.exe\nType 'back' to go back to menu!", style=(MUPPET_INFO))
+    exe_path: str = questionary.path("dmxconvert.exe file path: ").ask()
+    if exe_path.lower() == "back":
+        menu_setup()
     else:
-        print("Path Was Not A Valid Directory\nMust Be In A Addon Folder\n")
+        exe_path = os.path.normpath(exe_path) # normalizes path
+        if os.path.isfile(exe_path): # if path is direct to file
+            if os.path.basename(exe_path) == "dmxconvert.exe":
+                update_config('path_dmxconvert', exe_path)
+        elif os.path.isdir(exe_path) and "dmxconvert.exe" in os.listdir(exe_path): # check if path is folder containing dmxconvert.exe
+            #append to end of path
+            if exe_path[-1] == "/":
+                exe_path = exe_path + "dmxconvert.exe"
+            else:
+                exe_path = exe_path + "/dmxconvert.exe"
+            update_config('path_dmxconvert', exe_path)
+        else: # path is wrong invalid.
+            questionary.print("Path is invalid, 'dmxconvert.exe' could not be found.", style=MUPPET_ERROR)
+            questionary.press_any_key_to_continue().ask()
+            menu_setup()
 
-# here to load the dmxconvert.exe to pass out later.
-verify_dmxconvert = r'dmxconvert.exe'
-while True:
-    userinput_dmxconvert = input("\nEnter dmxconvert.exe eg:\n" + r"Half-Life Alyx\game\bin\win64\dmxconvert.exe" + "\nEnter : ")
-    #userinput_dmxconvert = r"D:\SteamLibrary\steamapps\common\Half-Life Alyx\game\bin\win64\dmxconvert.exe"
-
-    if os.path.isfile(userinput_dmxconvert):
-        print("is real exe")
-        if re.search(verify_dmxconvert, userinput_dmxconvert, re.IGNORECASE):
-            break
-        else:
-            print("Not A Valid EXE")
+# requests the location to resourcecompiler.exe
+def config_compiler_location():
+    questionary.print("resourcecompiler.exe is found in this folder: \nsteamapps/common/Half-Life Alyx/game/bin/win64/resourcecompiler.exe \nType 'back' to go back to menu!", style=(MUPPET_INFO))
+    exe_path: str = questionary.path("dmxconvert.exe file path: ").ask()
+    if exe_path.lower() == "back":
+        menu_setup()
     else:
-        print("File Does Not Exist")
+        exe_path = os.path.normpath(exe_path) # normalizes path
+        if os.path.isfile(exe_path): # if path is direct to file
+            if os.path.basename(exe_path) == "resourcecompiler.exe":
+                update_config('path_compiler', exe_path)
+        elif os.path.isdir(exe_path) and "resourcecompiler.exe" in os.listdir(exe_path): # check if path is folder containing resourcecompiler.exe
+            #append to end of path
+            if exe_path[-1] == "/":
+                exe_path = exe_path + "resourcecompiler.exe"
+            else:
+                exe_path = exe_path + "/resourcecompiler.exe"
+            update_config('path_compiler', exe_path)
+        else: # path is wrong invalid.
+            questionary.print("Path is invalid, 'resourcecompiler.exe' could not be found.", style=MUPPET_ERROR)
+            questionary.press_any_key_to_continue().ask()
+            menu_setup()
 
-cfg = Config()
+# checks if user config file exists, if not, create
+def first_time_check():
+    if not os.path.exists(USER_CONFIG_PATH):
+        create_config()
 
-while True:
-    command = input(">>> ").strip()
-    if not command:
-        continue
+# creates config for the first time, initializes as false. during runtime, check if config_get() returns false, direct user to settings.
+def create_config(): 
+    config = configparser.ConfigParser()
+    config['Paths'] = {
+        'path_dmxconvert' : False,
+        'path_compiler' : False,
+        }
+    with open(USER_CONFIG_PATH, 'w') as cfg:
+        config.write(cfg)
 
-    tokens = command.split(maxsplit=2)
+# updates config
+def update_config(variable, argument): 
+    questionary.print(f"Updated config, {variable} to {argument}", style=MUPPET_INFO)
+    config = configparser.ConfigParser()
+    with open(USER_CONFIG_PATH, 'r+') as cfg:
+        config.read(USER_CONFIG_PATH)
+        config.set('Paths', variable, argument)
+        config.write(cfg)
 
-    if len(tokens) < 3:
-        print("Usage: Set <var> <value>")
-        continue
+# returns value from config
+def config_get(option): 
+    config = configparser.ConfigParser()
+    config.read(USER_CONFIG_PATH)
+    return(config.get(option))
 
-    cmd, varname, value = tokens
+#TODO this is not used yet.
+# verifies if the mod path is valid.
+def verify_mod_path(mod_path: str) -> bool:
+    mod_path = os.path.normpath(mod_path)
+    mod_path = mod_path.lower()
+    HLA_PATH = "half-life alyx/content/hlvr_addons"
+    if HLA_PATH in mod_path:
+        return True
+    else:
+        return False
 
-    if cmd.lower() == "set":
-        handle_set_command(cfg, varname, value)
-
-    # Optionally check values after each set
-    if cfg.userinput_contentpath:
-        if not os.path.exists(cfg.userinput_contentpath) or not re.search(verify_mod, cfg.userinput_contentpath, re.IGNORECASE):
-            print("Invalid content path: must exist and be inside an addon folder.")
-        else:
-            print("Valid content path.")
-
-    if cfg.userinput_dmxconvert:
-        if not os.path.isfile(cfg.userinput_dmxconvert):
-            print("dmxconvert.exe path is not a valid file.")
-        elif not re.search(verify_dmxconvert, cfg.userinput_dmxconvert, re.IGNORECASE):
-            print("File is not named dmxconvert.exe.")
-        else:
-            print("Valid dmxconvert.exe path.")
+# Starting Point
+questionary.print("-== Welcome to MUPPET ==-", style=MUPPET_COLOR)
+first_time_check() # check if config file has been made, if not, make config
+main_menu()
